@@ -1,0 +1,50 @@
+export type SdkEventType =
+  | "auth.login_failed"
+  | "auth.login_success"
+  | "api.request";
+
+export interface SdkEvent {
+  type: SdkEventType;
+  timestamp: string;
+  ip: string;
+  userAgent: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface GuardrailConfig {
+  /** Account API key (gr_ak_...). Preferred over projectKey. */
+  apiKey?: string;
+  /** Project name — required when using apiKey */
+  project?: string;
+  /** @deprecated Use apiKey instead. Project key (gr_sk_...) for backward compat. */
+  projectKey?: string;
+  /** API URL override (default: https://guardrail-seven.vercel.app) */
+  apiUrl?: string;
+  /** Batch flush interval in ms (default: 30000) */
+  flushIntervalMs?: number;
+  /** Max events per batch (default: 50) */
+  maxBatchSize?: number;
+  /** Enable debug logging to stderr (default: false) */
+  debug?: boolean;
+}
+
+export interface ResolvedConfig {
+  /** The resolved auth key (apiKey or projectKey) */
+  key: string;
+  /** Project name (only set when using apiKey) */
+  project?: string;
+  apiUrl: string;
+  flushIntervalMs: number;
+  maxBatchSize: number;
+  debug: boolean;
+}
+
+export interface BlockedIpEntry {
+  ip: string;
+  blockedAt: string;
+}
+
+export interface FlushResponse {
+  received: number;
+  blockedIps: BlockedIpEntry[];
+}
