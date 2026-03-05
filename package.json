@@ -1,5 +1,5 @@
 {
-  "name": "guardrail-sdk",
+  "name": "@guardrail/sdk",
   "version": "0.1.0",
   "description": "GuardRail runtime security monitoring SDK — detect brute force, suspicious logins, and traffic spikes",
   "type": "module",
@@ -14,8 +14,7 @@
     "build": "tsc",
     "dev": "tsc --watch"
   },
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.7.0"
+  "volta": {
+    "extends": "../../package.json"
   }
 }
