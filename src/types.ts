@@ -3,6 +3,9 @@ export type SdkEventType =
   | "auth.login_success"
   | "api.request";
 
+/** Pluggable HTTP transport — defaults to global `fetch`. */
+export type Transport = (url: string, init: RequestInit) => Promise<Response>;
+
 export interface SdkEvent {
   type: SdkEventType;
   timestamp: string;
@@ -24,6 +27,8 @@ export interface GuardrailConfig {
   flushIntervalMs?: number;
   /** Max events per batch (default: 50) */
   maxBatchSize?: number;
+  /** Max events to hold in queue before dropping oldest (default: 1000) */
+  maxQueueSize?: number;
   /** Enable debug logging to stderr (default: false) */
   debug?: boolean;
 }
@@ -36,6 +41,7 @@ export interface ResolvedConfig {
   apiUrl: string;
   flushIntervalMs: number;
   maxBatchSize: number;
+  maxQueueSize: number;
   debug: boolean;
 }
 

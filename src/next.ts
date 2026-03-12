@@ -6,6 +6,7 @@ export type { GuardrailConfig, SdkEvent, SdkEventType } from "./types.js";
 const DEFAULT_API_URL = "https://guardrail-seven.vercel.app";
 const DEFAULT_FLUSH_INTERVAL_MS = 30_000;
 const DEFAULT_MAX_BATCH_SIZE = 50;
+const DEFAULT_MAX_QUEUE_SIZE = 1000;
 
 const AUTH_PATTERNS = [
   /\/login/i,
@@ -29,6 +30,7 @@ function resolveConfig(config: GuardrailConfig): ResolvedConfig {
     apiUrl: config.apiUrl || DEFAULT_API_URL,
     flushIntervalMs: config.flushIntervalMs || DEFAULT_FLUSH_INTERVAL_MS,
     maxBatchSize: config.maxBatchSize || DEFAULT_MAX_BATCH_SIZE,
+    maxQueueSize: config.maxQueueSize || DEFAULT_MAX_QUEUE_SIZE,
     debug: config.debug || false,
   };
 }

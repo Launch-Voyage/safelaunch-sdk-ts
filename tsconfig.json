@@ -5,8 +5,8 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true
   },
-  "include": ["src"]
+  "include": ["src", "vitest.config.ts"],
+  "exclude": ["src/__tests__"]
 }
