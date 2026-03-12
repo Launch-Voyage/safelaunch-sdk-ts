@@ -122,6 +122,12 @@ export class EventCollector {
         this.failCount = 0;
         this.dropCount = 0;
 
+        if (data.dropped > 0 && this.config.debug) {
+          console.warn(
+            `[guardrail-sdk] Server dropped ${data.dropped} events. Consider reducing maxBatchSize.`
+          );
+        }
+
         if (this.config.debug) {
           console.error(
             `[guardrail-sdk] Flushed ${batch.length} events. Blocked IPs: ${this.blockedIps.size}`

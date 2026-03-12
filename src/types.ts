@@ -52,5 +52,6 @@ export interface BlockedIpEntry {
 
 export interface FlushResponse {
   received: number;
+  dropped: number;
   blockedIps: BlockedIpEntry[];
 }

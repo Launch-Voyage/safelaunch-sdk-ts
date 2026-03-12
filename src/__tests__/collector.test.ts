@@ -24,9 +24,9 @@ function makeEvent(id: number): SdkEvent {
   };
 }
 
-function okTransport(): Transport {
+function okTransport(dropped = 0): Transport {
   return vi.fn<Transport>().mockResolvedValue(
-    new Response(JSON.stringify({ received: 1, blockedIps: [] }), {
+    new Response(JSON.stringify({ received: 1, dropped, blockedIps: [] }), {
       status: 200,
     })
   );
@@ -144,7 +144,7 @@ describe("EventCollector", () => {
         return new Response("error", { status: 500 });
       }
       return new Response(
-        JSON.stringify({ received: 1, blockedIps: [] }),
+        JSON.stringify({ received: 1, dropped: 0, blockedIps: [] }),
         { status: 200 }
       );
     });
@@ -281,5 +281,49 @@ describe("EventCollector", () => {
 
     // Pushing after destroy should still work (no crash), though timer is gone
     collector.push(makeEvent(2));
+  });
+
+  it("logs warning when server reports dropped events in debug mode", async () => {
+    const transport = okTransport(5);
+    const collector = new EventCollector(makeConfig({ debug: true }), transport);
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    collector.push(makeEvent(1));
+    await collector.flush();
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining("Server dropped 5 events")
+    );
+
+    spy.mockRestore();
+    await collector.destroy();
+  });
+
+  it("does not log when server reports dropped events with debug off", async () => {
+    const transport = okTransport(5);
+    const collector = new EventCollector(makeConfig({ debug: false }), transport);
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    collector.push(makeEvent(1));
+    await collector.flush();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+    await collector.destroy();
+  });
+
+  it("does not warn when server reports zero dropped events", async () => {
+    const transport = okTransport(0);
+    const collector = new EventCollector(makeConfig({ debug: true }), transport);
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    collector.push(makeEvent(1));
+    await collector.flush();
+
+    expect(spy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
+    await collector.destroy();
   });
 });
