@@ -7,6 +7,6 @@
     "outDir": "./dist",
     "declaration": true
   },
-  "include": ["src", "vitest.config.ts"],
-  "exclude": ["src/__tests__"]
+  "include": ["src", ],
+  "exclude": ["src/__tests__" , "vitest.config.ts"]
 }
