@@ -326,4 +326,26 @@ describe("EventCollector", () => {
     spy.mockRestore();
     await collector.destroy();
   });
+
+  it("matches full ip against masked blocked ranges", async () => {
+    const transport: Transport = vi.fn<Transport>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          received: 1,
+          dropped: 0,
+          blockedIps: [{ ip: "192.168.1.x", blockedAt: new Date().toISOString() }],
+        }),
+        { status: 200 }
+      )
+    );
+    const collector = new EventCollector(makeConfig(), transport);
+
+    collector.push(makeEvent(1));
+    await collector.flush();
+
+    expect(collector.isBlocked("192.168.1.100")).toBe(true);
+    expect(collector.isBlocked("192.168.2.100")).toBe(false);
+
+    await collector.destroy();
+  });
 });

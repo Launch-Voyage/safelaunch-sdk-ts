@@ -57,7 +57,7 @@ export class EventCollector {
 
   /** Check if an IP is in the blocked list. */
   isBlocked(ip: string): boolean {
-    return this.blockedIps.has(ip);
+    return this.blockedIps.has(maskIpAddress(ip));
   }
 
   private isCircuitOpen(): boolean {
@@ -177,4 +177,84 @@ export class EventCollector {
     }
     await this.flush();
   }
+}
+
+function maskIpv4(ip: string): string {
+  const parts = ip.split(".");
+  if (parts.length !== 4) return ip.replace(/\.[^.]*$/, ".x");
+  return `${parts[0]}.${parts[1]}.${parts[2]}.x`;
+}
+
+function ipv4ToIpv6Hextets(ipv4: string): [string, string] | null {
+  const octets = ipv4.split(".");
+  if (octets.length !== 4) return null;
+
+  const nums = octets.map((o) => Number(o));
+  if (nums.some((n) => Number.isNaN(n) || n < 0 || n > 255)) return null;
+
+  const first = ((nums[0] << 8) | nums[1]).toString(16);
+  const second = ((nums[2] << 8) | nums[3]).toString(16);
+  return [first, second];
+}
+
+function normalizeIpv6(ip: string): string[] | null {
+  const hasCompression = ip.includes("::");
+  const blocks = ip.split("::");
+  if (blocks.length > 2) return null;
+
+  const rawLeft = blocks[0] ? blocks[0].split(":").filter(Boolean) : [];
+  const rawRight =
+    blocks.length === 2 && blocks[1]
+      ? blocks[1].split(":").filter(Boolean)
+      : [];
+
+  const left = [...rawLeft];
+  const right = [...rawRight];
+
+  const convertEmbeddedIpv4 = (side: string[]) => {
+    const last = side[side.length - 1];
+    if (!last || !last.includes(".")) return true;
+
+    const converted = ipv4ToIpv6Hextets(last);
+    if (!converted) return false;
+
+    side.splice(side.length - 1, 1, converted[0], converted[1]);
+    return true;
+  };
+
+  if (!convertEmbeddedIpv4(left)) return null;
+  if (!convertEmbeddedIpv4(right)) return null;
+
+  const total = left.length + right.length;
+  if (!hasCompression && total !== 8) return null;
+  if (hasCompression && total >= 8) return null;
+
+  const fillCount = hasCompression ? 8 - total : 0;
+  return [...left, ...new Array(fillCount).fill("0"), ...right];
+}
+
+function maskIpv6(ip: string): string {
+  const withoutZone = ip.split("%")[0];
+  const normalized = normalizeIpv6(withoutZone);
+  if (!normalized) {
+    return withoutZone.replace(/:[^:]*$/, ":x");
+  }
+
+  normalized[normalized.length - 1] = "x";
+  return normalized.join(":");
+}
+
+function maskIpAddress(ip: string): string {
+  const value = ip.trim();
+  if (!value) return "x";
+
+  if (value.includes(":")) {
+    return maskIpv6(value);
+  }
+
+  if (value.includes(".")) {
+    return maskIpv4(value);
+  }
+
+  return "x";
 }
