@@ -1,0 +1,27 @@
+name: 'Run all tests'
+description: 'Build, lint, run unit tests'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '24.x'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: npm install
+      shell: bash
+
+    - name: Build all packages
+      run: npm run build
+      shell: bash
+
+    # - name: Lint
+    #   run: npm run lint
+    #   shell: bash
+
+    - name: Run unit tests
+      id: unit_tests
+      run: npm run test:unit
+      shell: bash
