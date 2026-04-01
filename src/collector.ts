@@ -7,7 +7,7 @@ import type {
 } from "./types.js";
 
 /**
- * Collects SDK events in-memory and sends them in batches to the GuardRail API.
+ * Collects SDK events in-memory and sends them in batches to the SafeLaunch API.
  * Also tracks blocked IPs returned by the server.
  */
 export class EventCollector {
@@ -44,7 +44,7 @@ export class EventCollector {
 
     if (this.dropCount > 0 && this.config.debug) {
       console.error(
-        `[guardrail-sdk] Queue full. ${this.dropCount} oldest events dropped.`
+        `[safelaunch-sdk] Queue full. ${this.dropCount} oldest events dropped.`
       );
     }
 
@@ -68,7 +68,7 @@ export class EventCollector {
     return Math.min(1000 * Math.pow(2, this.failCount), 300_000);
   }
 
-  /** Send queued events to the GuardRail API. */
+  /** Send queued events to the SafeLaunch API. */
   async flush(): Promise<void> {
     // Circuit breaker: stop flushing after 5 consecutive failures for 5 minutes
     if (this.isCircuitOpen()) {
@@ -77,7 +77,7 @@ export class EventCollector {
           (300_000 - (Date.now() - this.lastFailTime)) / 1000
         );
         console.error(
-          `[guardrail-sdk] Circuit open. Skipping flush. Resumes in ~${remainingSec}s.`
+          `[safelaunch-sdk] Circuit open. Skipping flush. Resumes in ~${remainingSec}s.`
         );
       }
       return;
@@ -124,13 +124,13 @@ export class EventCollector {
 
         if (data.dropped > 0 && this.config.debug) {
           console.warn(
-            `[guardrail-sdk] Server dropped ${data.dropped} events. Consider reducing maxBatchSize.`
+            `[safelaunch-sdk] Server dropped ${data.dropped} events. Consider reducing maxBatchSize.`
           );
         }
 
         if (this.config.debug) {
           console.error(
-            `[guardrail-sdk] Flushed ${batch.length} events. Blocked IPs: ${this.blockedIps.size}`
+            `[safelaunch-sdk] Flushed ${batch.length} events. Blocked IPs: ${this.blockedIps.size}`
           );
         }
       } else {
@@ -145,7 +145,7 @@ export class EventCollector {
 
         if (this.config.debug) {
           console.error(
-            `[guardrail-sdk] Flush failed (${res.status}). ${batch.length} events re-queued.`
+            `[safelaunch-sdk] Flush failed (${res.status}). ${batch.length} events re-queued.`
           );
         }
       }
@@ -161,7 +161,7 @@ export class EventCollector {
 
       if (this.config.debug) {
         console.error(
-          `[guardrail-sdk] Flush error: ${err instanceof Error ? err.message : "Unknown error"}. ${batch.length} events re-queued.`
+          `[safelaunch-sdk] Flush error: ${err instanceof Error ? err.message : "Unknown error"}. ${batch.length} events re-queued.`
         );
       }
     } finally {

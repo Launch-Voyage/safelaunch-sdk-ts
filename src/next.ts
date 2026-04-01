@@ -1,9 +1,9 @@
 import { EventCollector } from "./collector.js";
-import type { GuardrailConfig, ResolvedConfig } from "./types.js";
+import type { SafeLaunchConfig, ResolvedConfig } from "./types.js";
 
-export type { GuardrailConfig, SdkEvent, SdkEventType } from "./types.js";
+export type { SafeLaunchConfig, SdkEvent, SdkEventType } from "./types.js";
 
-const DEFAULT_API_URL = "https://guardrail-seven.vercel.app";
+const DEFAULT_API_URL = "https://safelaunch.vercel.app";
 const DEFAULT_FLUSH_INTERVAL_MS = 30_000;
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_QUEUE_SIZE = 1000;
@@ -22,7 +22,7 @@ function isAuthEndpoint(path: string): boolean {
   return AUTH_PATTERNS.some((p) => p.test(path));
 }
 
-function resolveConfig(config: GuardrailConfig): ResolvedConfig {
+function resolveConfig(config: SafeLaunchConfig): ResolvedConfig {
   const key = config.apiKey || config.projectKey || "";
   return {
     key,
@@ -46,34 +46,34 @@ function getCollector(config: ResolvedConfig): EventCollector {
 }
 
 /**
- * Next.js middleware for GuardRail runtime monitoring.
+ * Next.js middleware for SafeLaunch runtime monitoring.
  *
  * Usage in middleware.ts:
  * ```ts
- * import { guardrailMiddleware } from 'guardrail-sdk/next'
+ * import { safelaunchMiddleware } from '@safelaunch/sdk/next'
  *
- * const guardrail = guardrailMiddleware({
- *   apiKey: process.env.GUARDRAIL_API_KEY!,
+ * const safelaunch = safelaunchMiddleware({
+ *   apiKey: process.env.SAFELAUNCH_API_KEY!,
  *   project: 'my-app',
  * })
  *
  * export async function middleware(request: Request) {
- *   const blocked = guardrail(request)
+ *   const blocked = safelaunch(request)
  *   if (blocked) return blocked
  * }
  * ```
  *
  * Note: Next.js middleware cannot access response status codes,
  * so auth.login_failed/success events cannot be auto-detected.
- * For auth event tracking, call the GuardRail API directly from
+ * For auth event tracking, call the SafeLaunch API directly from
  * your API route handlers.
  */
-export function guardrailMiddleware(config: GuardrailConfig) {
+export function safelaunchMiddleware(config: SafeLaunchConfig) {
   if (!config.apiKey && !config.projectKey) {
     console.error(
-      "[guardrail-sdk] Missing apiKey. Set GUARDRAIL_API_KEY environment variable."
+      "[safelaunch-sdk] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
     );
-    return function guardrailNoOp(): Response | null {
+    return function safelaunchNoOp(): Response | null {
       return null;
     };
   }
@@ -81,14 +81,14 @@ export function guardrailMiddleware(config: GuardrailConfig) {
   const resolved = resolveConfig(config);
 
   if (resolved.debug) {
-    console.error("[guardrail-sdk] Initialized with Next.js middleware");
+    console.error("[safelaunch-sdk] Initialized with Next.js middleware");
   }
 
   /**
    * Call this function inside your Next.js middleware.
    * Returns a Response if the IP is blocked, or null to continue.
    */
-  return function guardrail(request: Request): Response | null {
+  return function safelaunch(request: Request): Response | null {
     const c = getCollector(resolved);
 
     const ip =
@@ -129,7 +129,7 @@ export function guardrailMiddleware(config: GuardrailConfig) {
       // will use the api.request pattern combined with other signals
       if (resolved.debug) {
         console.error(
-          `[guardrail-sdk] Auth endpoint hit: ${pathname} from ${ip}`
+          `[safelaunch-sdk] Auth endpoint hit: ${pathname} from ${ip}`
         );
       }
     }
