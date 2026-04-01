@@ -1,7 +1,7 @@
 {
-  "name": "@guardrail/sdk",
+  "name": "@safelaunch/sdk",
   "version": "0.1.0",
-  "description": "GuardRail runtime security monitoring SDK — detect brute force, suspicious logins, and traffic spikes",
+  "description": "SafeLaunch runtime security monitoring SDK — detect brute force, suspicious logins, and traffic spikes",
   "type": "module",
   "exports": {
     ".": "./dist/index.js",

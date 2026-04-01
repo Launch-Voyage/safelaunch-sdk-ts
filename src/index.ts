@@ -1,9 +1,9 @@
 import { EventCollector } from "./collector.js";
-import type { GuardrailConfig, ResolvedConfig } from "./types.js";
+import type { SafeLaunchConfig, ResolvedConfig } from "./types.js";
 
-export type { GuardrailConfig, SdkEvent, SdkEventType } from "./types.js";
+export type { SafeLaunchConfig, SdkEvent, SdkEventType } from "./types.js";
 
-const DEFAULT_API_URL = "https://guardrail-seven.vercel.app";
+const DEFAULT_API_URL = "https://safelaunch.vercel.app";
 const DEFAULT_FLUSH_INTERVAL_MS = 30_000;
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_QUEUE_SIZE = 1000;
@@ -23,7 +23,7 @@ function isAuthEndpoint(path: string): boolean {
   return AUTH_PATTERNS.some((p) => p.test(path));
 }
 
-function resolveConfig(config: GuardrailConfig): ResolvedConfig {
+function resolveConfig(config: SafeLaunchConfig): ResolvedConfig {
   const key = config.apiKey || config.projectKey || "";
   return {
     key,
@@ -37,25 +37,25 @@ function resolveConfig(config: GuardrailConfig): ResolvedConfig {
 }
 
 /**
- * Express/Connect middleware for GuardRail runtime monitoring.
+ * Express/Connect middleware for SafeLaunch runtime monitoring.
  *
  * Usage:
  * ```ts
- * import { guardrail } from 'guardrail-sdk'
+ * import { safelaunch } from '@safelaunch/sdk'
  *
- * app.use(guardrail({
- *   apiKey: process.env.GUARDRAIL_API_KEY,
+ * app.use(safelaunch({
+ *   apiKey: process.env.SAFELAUNCH_API_KEY,
  *   project: 'my-app',
  * }))
  * ```
  */
-export function guardrail(config: GuardrailConfig) {
+export function safelaunch(config: SafeLaunchConfig) {
   if (!config.apiKey && !config.projectKey) {
     console.error(
-      "[guardrail-sdk] Missing apiKey. Set GUARDRAIL_API_KEY environment variable."
+      "[safelaunch-sdk] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
     );
     // Return no-op middleware
-    return function guardrailNoOp(
+    return function safelaunchNoOp(
       _req: unknown,
       _res: unknown,
       next: () => void
@@ -68,11 +68,11 @@ export function guardrail(config: GuardrailConfig) {
   const collector = new EventCollector(resolved);
 
   if (resolved.debug) {
-    console.error("[guardrail-sdk] Initialized with Express middleware");
+    console.error("[safelaunch-sdk] Initialized with Express middleware");
   }
 
   // Express middleware signature
-  return function guardrailMiddleware(
+  return function safelaunchMiddleware(
     req: {
       ip?: string;
       socket?: { remoteAddress?: string };

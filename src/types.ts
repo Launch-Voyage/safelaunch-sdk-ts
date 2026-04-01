@@ -14,14 +14,14 @@ export interface SdkEvent {
   metadata: Record<string, unknown>;
 }
 
-export interface GuardrailConfig {
+export interface SafeLaunchConfig {
   /** Account API key (gr_ak_...). Preferred over projectKey. */
   apiKey?: string;
   /** Project name — required when using apiKey */
   project?: string;
   /** @deprecated Use apiKey instead. Project key (gr_sk_...) for backward compat. */
   projectKey?: string;
-  /** API URL override (default: https://guardrail-seven.vercel.app) */
+  /** API URL override (default: production API URL used by the SDK when unset) */
   apiUrl?: string;
   /** Batch flush interval in ms (default: 30000) */
   flushIntervalMs?: number;
