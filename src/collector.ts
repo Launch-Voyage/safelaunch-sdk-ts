@@ -44,7 +44,7 @@ export class EventCollector {
 
     if (this.dropCount > 0 && this.config.debug) {
       console.error(
-        `[safelaunch-sdk] Queue full. ${this.dropCount} oldest events dropped.`
+        `[safelaunch-sdk-node] Queue full. ${this.dropCount} oldest events dropped.`
       );
     }
 
@@ -77,7 +77,7 @@ export class EventCollector {
           (300_000 - (Date.now() - this.lastFailTime)) / 1000
         );
         console.error(
-          `[safelaunch-sdk] Circuit open. Skipping flush. Resumes in ~${remainingSec}s.`
+          `[safelaunch-sdk-node] Circuit open. Skipping flush. Resumes in ~${remainingSec}s.`
         );
       }
       return;
@@ -124,13 +124,13 @@ export class EventCollector {
 
         if (data.dropped > 0 && this.config.debug) {
           console.warn(
-            `[safelaunch-sdk] Server dropped ${data.dropped} events. Consider reducing maxBatchSize.`
+            `[safelaunch-sdk-node] Server dropped ${data.dropped} events. Consider reducing maxBatchSize.`
           );
         }
 
         if (this.config.debug) {
           console.error(
-            `[safelaunch-sdk] Flushed ${batch.length} events. Blocked IPs: ${this.blockedIps.size}`
+            `[safelaunch-sdk-node] Flushed ${batch.length} events. Blocked IPs: ${this.blockedIps.size}`
           );
         }
       } else {
@@ -145,7 +145,7 @@ export class EventCollector {
 
         if (this.config.debug) {
           console.error(
-            `[safelaunch-sdk] Flush failed (${res.status}). ${batch.length} events re-queued.`
+            `[safelaunch-sdk-node] Flush failed (${res.status}). ${batch.length} events re-queued.`
           );
         }
       }
@@ -161,7 +161,7 @@ export class EventCollector {
 
       if (this.config.debug) {
         console.error(
-          `[safelaunch-sdk] Flush error: ${err instanceof Error ? err.message : "Unknown error"}. ${batch.length} events re-queued.`
+          `[safelaunch-sdk-node] Flush error: ${err instanceof Error ? err.message : "Unknown error"}. ${batch.length} events re-queued.`
         );
       }
     } finally {
