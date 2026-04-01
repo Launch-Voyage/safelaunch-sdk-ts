@@ -50,7 +50,7 @@ function getCollector(config: ResolvedConfig): EventCollector {
  *
  * Usage in middleware.ts:
  * ```ts
- * import { safelaunchMiddleware } from '@safelaunch/sdk/next'
+ * import { safelaunchMiddleware } from '@safelaunch/sdk-node/next'
  *
  * const safelaunch = safelaunchMiddleware({
  *   apiKey: process.env.SAFELAUNCH_API_KEY!,
@@ -71,7 +71,7 @@ function getCollector(config: ResolvedConfig): EventCollector {
 export function safelaunchMiddleware(config: SafeLaunchConfig) {
   if (!config.apiKey && !config.projectKey) {
     console.error(
-      "[safelaunch-sdk] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
+      "[safelaunch-sdk-node] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
     );
     return function safelaunchNoOp(): Response | null {
       return null;
@@ -81,7 +81,7 @@ export function safelaunchMiddleware(config: SafeLaunchConfig) {
   const resolved = resolveConfig(config);
 
   if (resolved.debug) {
-    console.error("[safelaunch-sdk] Initialized with Next.js middleware");
+    console.error("[safelaunch-sdk-node] Initialized with Next.js middleware");
   }
 
   /**
@@ -129,7 +129,7 @@ export function safelaunchMiddleware(config: SafeLaunchConfig) {
       // will use the api.request pattern combined with other signals
       if (resolved.debug) {
         console.error(
-          `[safelaunch-sdk] Auth endpoint hit: ${pathname} from ${ip}`
+          `[safelaunch-sdk-node] Auth endpoint hit: ${pathname} from ${ip}`
         );
       }
     }

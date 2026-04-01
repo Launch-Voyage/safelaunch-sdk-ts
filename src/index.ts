@@ -41,7 +41,7 @@ function resolveConfig(config: SafeLaunchConfig): ResolvedConfig {
  *
  * Usage:
  * ```ts
- * import { safelaunch } from '@safelaunch/sdk'
+ * import { safelaunch } from '@safelaunch/sdk-node'
  *
  * app.use(safelaunch({
  *   apiKey: process.env.SAFELAUNCH_API_KEY,
@@ -52,7 +52,7 @@ function resolveConfig(config: SafeLaunchConfig): ResolvedConfig {
 export function safelaunch(config: SafeLaunchConfig) {
   if (!config.apiKey && !config.projectKey) {
     console.error(
-      "[safelaunch-sdk] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
+      "[safelaunch-sdk-node] Missing apiKey. Set SAFELAUNCH_API_KEY environment variable."
     );
     // Return no-op middleware
     return function safelaunchNoOp(
@@ -68,7 +68,7 @@ export function safelaunch(config: SafeLaunchConfig) {
   const collector = new EventCollector(resolved);
 
   if (resolved.debug) {
-    console.error("[safelaunch-sdk] Initialized with Express middleware");
+    console.error("[safelaunch-sdk-node] Initialized with Express middleware");
   }
 
   // Express middleware signature
