@@ -2,6 +2,7 @@
   "name": "@safelaunch/sdk-node",
   "version": "0.1.0",
   "description": "SafeLaunch runtime security monitoring SDK — detect brute force, suspicious logins, and traffic spikes",
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
