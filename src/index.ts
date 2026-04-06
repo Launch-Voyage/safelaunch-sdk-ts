@@ -3,7 +3,7 @@ import type { SafeLaunchConfig, ResolvedConfig } from "./types.js";
 
 export type { SafeLaunchConfig, SdkEvent, SdkEventType } from "./types.js";
 
-const DEFAULT_API_URL = "https://safelaunch.dev";
+const DEFAULT_API_URL = "https://safelaunch.vercel.app";
 const DEFAULT_FLUSH_INTERVAL_MS = 30_000;
 const DEFAULT_MAX_BATCH_SIZE = 50;
 const DEFAULT_MAX_QUEUE_SIZE = 1000;
